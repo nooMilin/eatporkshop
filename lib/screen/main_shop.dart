@@ -21,7 +21,7 @@ class _MainShopState extends State<MainShop> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),
-            onPressed: () => signOutProcess(),
+            onPressed: () => signOutProcess(context),
           )
         ],
       ),
@@ -97,6 +97,6 @@ class _MainShopState extends State<MainShop> {
         leading: Icon(Icons.exit_to_app),
         title: Text('Sign Out'),
         subtitle: Text('Sign Out และ กลับไป หน้าแรก'),
-        onTap: () => signOutProcess(),
+        onTap: () => signOutProcess(context),
       );
 }

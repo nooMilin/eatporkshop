@@ -34,7 +34,7 @@ class _MainUserState extends State<MainUser> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),
-            onPressed: () => signOutProcess(),
+            onPressed: () => signOutProcess(context),
           )
         ],
       ),
