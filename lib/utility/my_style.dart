@@ -58,4 +58,9 @@ class MyStyle {
       ),
     );
   }
+
+Widget showProgress(){
+  return Center(child: CircularProgressIndicator(),);
+}
+
 }
