@@ -6,6 +6,7 @@ import 'package:eatporkshop/model/user_model.dart';
 import 'package:eatporkshop/screen/main_rider.dart';
 import 'package:eatporkshop/screen/main_shop.dart';
 import 'package:eatporkshop/screen/main_user.dart';
+import 'package:eatporkshop/utility/my_constant.dart';
 import 'package:eatporkshop/utility/my_style.dart';
 import 'package:eatporkshop/utility/normal_dialog.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +117,7 @@ class _SignInState extends State<SignIn> {
       );
 
   Future <Null> checkAuthen() async{
-    String url = 'http://192.168.1.37/eatporkshop/api/getUser.php?isAdd=true&User=$user';
+    String url = '${MyConstant().domain}/eatporkshop/api/getUser.php?isAdd=true&User=$user';
     try {
 
       Response response = await Dio().get(url);

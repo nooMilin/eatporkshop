@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:eatporkshop/utility/my_constant.dart';
 import 'package:eatporkshop/utility/my_style.dart';
 import 'package:eatporkshop/utility/normal_dialog.dart';
 import 'package:flutter/material.dart';
@@ -238,7 +239,7 @@ class _SignUpState extends State<SignUp> {
 
   Future<Null> checkUser() async {
     String url =
-        'http://192.168.1.37/eatporkshop/api/getUser.php?isAdd=true&User=$user';
+        '${MyConstant().domain}/eatporkshop/api/getUser.php?isAdd=true&User=$user';
 
     try {
       Response response = await Dio().get(url);
@@ -252,7 +253,7 @@ class _SignUpState extends State<SignUp> {
 
   Future<Null> registerThread() async {
     String url =
-        'http://192.168.1.37/eatporkshop/api/addUser.php?isAdd=true&Name=$name&User=$user&Password=$password&ChooseType=$chooseType';
+        '${MyConstant().domain}/eatporkshop/api/addUser.php?isAdd=true&Name=$name&User=$user&Password=$password&ChooseType=$chooseType';
 
     try {
       Response response = await Dio().get(url);
