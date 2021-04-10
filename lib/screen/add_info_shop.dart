@@ -226,13 +226,13 @@ class _AddInfoShopState extends State<AddInfoShop> {
 
   Future<Null> chooseImage(ImageSource imageSource) async {
     try {
-      var object = await picker.getImage(
+      var object = await ImagePicker().getImage(
         source: imageSource,
         maxHeight: 800.0,
         maxWidth: 800.0,
       );
       setState(() {
-        file = object as File;
+        file = File(object.path);
       });
     } catch (e) {}
   }
