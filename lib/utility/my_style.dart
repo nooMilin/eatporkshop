@@ -47,7 +47,8 @@ class MyStyle {
 
   Widget titleCenter(BuildContext context, String string) {
     return Center(
-      child: Container(width: MediaQuery.of(context).size.width*0.5,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.5,
         child: Text(
           string,
           style: TextStyle(
@@ -59,8 +60,20 @@ class MyStyle {
     );
   }
 
-Widget showProgress(){
-  return Center(child: CircularProgressIndicator(),);
-}
+  Widget showProgress() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
 
+  TextStyle mainTitle = TextStyle(
+    fontSize: 18.0,
+    fontWeight: FontWeight.bold,
+    color: Colors.purple,
+  );
+
+  TextStyle mainH2Title = TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.bold,
+      color: Colors.green.shade700);
 }
