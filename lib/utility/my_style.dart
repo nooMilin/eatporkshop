@@ -26,6 +26,15 @@ class MyStyle {
         ),
       );
 
+  Text showTitleH3(String title) => Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.blue.shade900,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+
   Color darkColor = Colors.blue.shade900;
   Color primaryColor = Colors.pink;
 

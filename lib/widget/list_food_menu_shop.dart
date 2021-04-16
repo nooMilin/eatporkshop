@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:eatporkshop/model/food_model.dart';
 import 'package:eatporkshop/screen/add_food_menu.dart';
+import 'package:eatporkshop/screen/edit_food_menu.dart';
 import 'package:eatporkshop/utility/my_constant.dart';
 import 'package:eatporkshop/utility/my_style.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,6 @@ class _ListFoodMenuShopState extends State<ListFoodMenuShop> {
   }
 
   Future<Null> readFoodMenu() async {
-
     if (foodModels.length != 0) {
       foodModels.clear();
     }
@@ -94,17 +94,80 @@ class _ListFoodMenuShopState extends State<ListFoodMenuShop> {
               padding: EdgeInsets.all(10.0),
               width: MediaQuery.of(context).size.width * 0.5,
               height: MediaQuery.of(context).size.width * 0.4,
-              child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(foodModels[index].nameFood, style: MyStyle().mainTitle,),
-                  Text('ราคา ${foodModels[index].price} บาท', style: MyStyle().mainH2Title,),
-                  Text(foodModels[index].detail)
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      foodModels[index].nameFood,
+                      style: MyStyle().mainTitle,
+                    ),
+                    Text(
+                      'ราคา ${foodModels[index].price} บาท',
+                      style: MyStyle().mainH2Title,
+                    ),
+                    Text(foodModels[index].detail),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Colors.green,
+                            ),
+                            onPressed: () {
+                              MaterialPageRoute route = MaterialPageRoute(
+                                builder: (context) => EditFoodMenu(foodModel: foodModels[index],),
+                              );
+                              Navigator.push(context, route).then(
+                                (value) => readFoodMenu(),
+                              );
+                            }),
+                        IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          onPressed: () => deleteFood(foodModels[index]),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       );
+
+  Future<Null> deleteFood(FoodModel foodModel) async {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: MyStyle()
+            .showTitleH2('คุณต้องการลบ เมนู ${foodModel.nameFood} หรือไม่ ?'),
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              FlatButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  String url =
+                      '${MyConstant().domain}/eatporkshop/api/deleteFoodWhereId.php?isAdd=true&id=${foodModel.id}';
+                  await Dio().get(url).then((value) => readFoodMenu());
+                },
+                child: Text('ยืนยัน'),
+              ),
+              FlatButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('ยกเลิก'))
+            ],
+          )
+        ],
+      ),
+    );
+  }
 
   Widget addMenuButton() => Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -122,7 +185,8 @@ class _ListFoodMenuShopState extends State<ListFoodMenuShop> {
                     MaterialPageRoute route = MaterialPageRoute(
                       builder: (context) => AddFoodMenu(),
                     );
-                    Navigator.push(context, route).then((value) => readFoodMenu());
+                    Navigator.push(context, route)
+                        .then((value) => readFoodMenu());
                   },
                   child: Icon(Icons.add),
                 ),
