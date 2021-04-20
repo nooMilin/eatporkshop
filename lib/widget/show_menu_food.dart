@@ -1,11 +1,18 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:eatporkshop/model/cart_model.dart';
 import 'package:eatporkshop/model/food_model.dart';
 import 'package:eatporkshop/model/user_model.dart';
+import 'package:eatporkshop/utility/my_api.dart';
 import 'package:eatporkshop/utility/my_constant.dart';
 import 'package:eatporkshop/utility/my_style.dart';
+import 'package:eatporkshop/utility/normal_dialog.dart';
+import 'package:eatporkshop/utility/sqlite_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:location/location.dart';
+import 'package:toast/toast.dart';
 
 class ShowMenuFood extends StatefulWidget {
   final UserModel userModel;
@@ -20,6 +27,8 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
   String idShop;
   List<FoodModel> foodModels = List();
   int amount = 1;
+  double lat1, lng1, lat2, lng2;
+  Location location = Location();
 
   @override
   void initState() {
@@ -27,6 +36,14 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
     super.initState();
     userModel = widget.userModel;
     readFoodMenu();
+    findlocation();
+  }
+
+  Future<Null> findlocation() async {
+    location.onLocationChanged.listen((event) {
+      lat1 = event.latitude;
+      lng1 = event.longitude;
+    });
   }
 
   Future<Null> readFoodMenu() async {
@@ -191,7 +208,7 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
                       onPressed: () {
                         Navigator.pop(context);
 
-                        addOrderToCart();
+                        addOrderToCart(index);
                       },
                       child: Text(
                         'สั่งซื้อ',
@@ -221,5 +238,72 @@ class _ShowMenuFoodState extends State<ShowMenuFood> {
     );
   }
 
-  void addOrderToCart() {}
+  Future<Null> addOrderToCart(int index) async {
+    String nameShop = userModel.nameShop;
+    String idFood = foodModels[index].id;
+    String nameFood = foodModels[index].nameFood;
+    String price = foodModels[index].price;
+
+    int priceInt = int.parse(price);
+    int sumInt = priceInt * amount;
+
+    lat2 = double.parse(userModel.lat);
+    lng2 = double.parse(userModel.lng);
+    double distance = MyAPI().calculateDistance(lat1, lng1, lat2, lng2);
+
+    var myFormat = NumberFormat('##0.0#', 'en_US');
+    String distanceString = myFormat.format(distance);
+
+    int transport = MyAPI().calculateTransport(distance);
+
+    print(
+        'idShop = $idShop, nameShop = $nameShop, idFood = $idFood, nameFood = $nameFood, price = $price, amount = $amount, sum = $sumInt, distance = $distanceString, transport = $transport');
+
+    Map<String, dynamic> map = Map();
+
+    map['idShop'] = idShop;
+    map['nameShop'] = nameShop;
+    map['idFood'] = idFood;
+    map['nameFood'] = nameFood;
+    map['price'] = price;
+    map['amount'] = amount.toString();
+    map['sum'] = sumInt.toString();
+    map['distance'] = distanceString;
+    map['transport'] = transport.toString();
+
+    print('map ===> ${map.toString()}');
+
+    CartModel cartModel = CartModel.fromJson(map);
+
+    var object = await SQLiteHelper().readAllDataFromSQLite();
+
+    print('object lenght == ${object.length}');
+
+    if (object.length == 0) {
+      await SQLiteHelper().insertDataToSQLite(cartModel).then((value) {
+        print('Insert Success');
+        showTost('Insert Success');
+      });
+    } else {
+      String idShopSQLite = object[0].idShop;
+      print('idShopSQLite ==>> $idShopSQLite');
+      if (idShop == idShopSQLite) {
+        await SQLiteHelper().insertDataToSQLite(cartModel).then((value) {
+          print('Insert Success');
+          showTost('Insert Success');
+        });
+      } else {
+        normalDialog(context,
+            'ตะกร้ามีรายการอาหารของ ร้าน ${object[0].nameShop} อยู่ กรุณา ชื่อจากร้านนี้ให้ จบก่อน ค่ะ');
+      }
+    }
+  }
+
+  void showTost(String string) {
+    Toast.show(
+      string,
+      context,
+      duration: Toast.LENGTH_LONG,
+    );
+  }
 }

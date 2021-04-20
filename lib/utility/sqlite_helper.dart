@@ -1,9 +1,10 @@
+import 'package:eatporkshop/model/cart_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class SQLiteHelper {
-  final String nameDatabase = 'eatPorkShop.db';
-  final String tableDatabase = 'order';
+  final String nameDatabase = 'eatPorkShop2.db';
+  final String tableDatabase = 'orderTABLE';
   int version = 1;
 
   final String idColumn = 'id';
@@ -27,4 +28,37 @@ class SQLiteHelper {
             'CREATE TABLE $tableDatabase ($idColumn INTEGER PRIMARY KEY, $idShopColumn TEXT, $nameShop TEXT, $idFood TEXT, $nameFood TEXT, $price TEXT, $amount TEXT, $sum TEXT, $distance TEXT, $transport TEXT)'),
         version: version);
   }
+
+  Future<Database> connectedDatabase() async {
+    return openDatabase(join(await getDatabasesPath(), nameDatabase));
+  }
+
+  Future<Null> insertDataToSQLite(CartModel cartModel) async {
+    Database database = await connectedDatabase();
+    try {
+      database.insert(
+        tableDatabase,
+        cartModel.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      print('e insertData ==>> ${e.toString()}');
+    }
+  }
+
+  Future<List<CartModel>> readAllDataFromSQLite() async {
+    Database database = await connectedDatabase();
+    List<CartModel> cartModels = List();
+
+    List<Map<String, dynamic>> maps = await database.query(tableDatabase);
+    for (var map in maps) {
+      CartModel cartModel = CartModel.fromJson(map);
+      cartModels.add(cartModel);
+    }
+
+    return cartModels;
+  }
+
+
+
 }
