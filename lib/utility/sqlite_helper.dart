@@ -60,5 +60,16 @@ class SQLiteHelper {
   }
 
 
+  Future<Null> deleteDataWhereId(int id)async{
+    Database database = await connectedDatabase();
+
+    try {
+      await database.delete(tableDatabase, where: '$idColumn = $id');
+    } catch (e) {
+      print('e delete ==>> ${e.toString()}');
+    } 
+  }
+
+
 
 }

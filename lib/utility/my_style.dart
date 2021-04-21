@@ -1,3 +1,4 @@
+import 'package:eatporkshop/screen/show_cart.dart';
 import 'package:flutter/material.dart';
 
 class MyStyle {
@@ -31,6 +32,15 @@ class MyStyle {
         style: TextStyle(
           fontSize: 16.0,
           color: Colors.blue.shade900,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+
+      Text showTitleH3Red(String title) => Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.red.shade900,
           fontWeight: FontWeight.bold,
         ),
       );
@@ -85,4 +95,16 @@ class MyStyle {
       fontSize: 16.0,
       fontWeight: FontWeight.bold,
       color: Colors.green.shade700);
+
+  Widget iconShowCart(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.add_shopping_cart),
+      onPressed: () {
+        MaterialPageRoute route = MaterialPageRoute(
+          builder: (context) => ShowCart(),
+        );
+        Navigator.push(context, route);
+      },
+    );
+  }
 }
