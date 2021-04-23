@@ -36,6 +36,15 @@ class MyStyle {
         ),
       );
 
+  Text showTitleH3White(String title) => Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.0,
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+
   Text showTitleH3Red(String title) => Text(
         title,
         style: TextStyle(

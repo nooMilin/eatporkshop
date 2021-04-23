@@ -322,9 +322,9 @@ class _ShowCartState extends State<ShowCart> {
 
     String idFood = idFoods.toString();
     String nameFood = nameFoods.toString();
-    String price = nameFoods.toString();
-    String amount = nameFoods.toString();
-    String sum = nameFoods.toString();
+    String price = prices.toString();
+    String amount = amounts.toString();
+    String sum = sums.toString();
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
 

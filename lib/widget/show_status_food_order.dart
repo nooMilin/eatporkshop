@@ -16,6 +16,10 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
   String idUser;
   bool statusOrder = true;
   List<OrderModel> orderModels = List();
+  List<List<String>> listMunuFoods = List();
+  List<List<String>> listPrices = List();
+  List<List<String>> listAmounts = List();
+  List<List<String>> listSums = List();
 
   @override
   void initState() {
@@ -38,18 +42,87 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
             buildDateTimeOrder(index),
             buildDistance(index),
             buildTransport(index),
-            Text(orderModels[index].nameFood),
+            buildHead(),
+            buildListViewMenuFood(index),
           ],
         ),
       );
 
+  ListView buildListViewMenuFood(int index) => ListView.builder(
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+        itemCount: listMunuFoods.length,
+        itemBuilder: (context, index2) => Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Text(listMunuFoods[index][index2]),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(listPrices[index][index2]),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(listAmounts[index][index2]),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(listSums[index][index2]),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Container buildHead() {
+    return Container(
+      padding: EdgeInsets.only(left: 8.0),
+      decoration: BoxDecoration(color: Colors.grey),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: MyStyle().showTitleH3White('รายการอาหาร'),
+          ),
+          Expanded(
+            flex: 1,
+            child: MyStyle().showTitleH3White('ราคา'),
+          ),
+          Expanded(
+            flex: 1,
+            child: MyStyle().showTitleH3White('จำนวน'),
+          ),
+          Expanded(
+            flex: 1,
+            child: MyStyle().showTitleH3White('ผมรวม'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Row buildTransport(int index) {
     return Row(
-            children: [
-              MyStyle()
-                  .showTitleH3Purple('ค่าขนส่ง ${orderModels[index].transport} บาท'),
-            ],
-          );
+      children: [
+        MyStyle()
+            .showTitleH3Purple('ค่าขนส่ง ${orderModels[index].transport} บาท'),
+      ],
+    );
   }
 
   Row buildDistance(int index) {
@@ -91,17 +164,37 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
           '${MyConstant().domain}/eatporkshop/api/getOrderWhereIdUser.php?isAdd=true&idUser=$idUser';
 
       Response response = await Dio().get(url);
-      print('response ==>> $response');
       if (response.toString() != 'null') {
         var result = json.decode(response.data);
         for (var item in result) {
           OrderModel model = OrderModel.fromJson(item);
+          List<String> menuFoods = changeArray(model.nameFood);
+          List<String> prices = changeArray(model.price);
+          List<String> amounts = changeArray(model.amount);
+          List<String> sums = changeArray(model.sum);
           setState(() {
             statusOrder = false;
             orderModels.add(model);
+            listMunuFoods.add(menuFoods);
+            listPrices.add(prices);
+            listAmounts.add(amounts);
+            listSums.add(sums);
           });
         }
       }
     }
+  }
+
+  List<String> changeArray(String string) {
+    List<String> list = List();
+    String myString = string.substring(1, string.length - 1);
+    list = myString.split(',');
+    int index = 0;
+    for (var string in list) {
+      list[index] = string.trim();
+
+      index++;
+    }
+    return list;
   }
 }
