@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:eatporkshop/model/cart_model.dart';
+import 'package:eatporkshop/model/user_model.dart';
 import 'package:eatporkshop/utility/my_constant.dart';
 import 'package:eatporkshop/utility/my_style.dart';
 import 'package:eatporkshop/utility/normal_dialog.dart';
@@ -337,6 +340,7 @@ class _ShowCartState extends State<ShowCart> {
     await Dio().get(url).then((value) {
       if (value.toString() == 'true') {
         clearAllSQLite();
+        notificationToShop(idShop);
       } else {
         normalDialog(context, 'ไม่สามารถ สั่งอาหารได้ กรุณาลองใหม่');
       }
@@ -352,5 +356,29 @@ class _ShowCartState extends State<ShowCart> {
     await SQLiteHelper().deleteAllData().then((value) {
       readSQLite();
     });
+  }
+
+  Future<Null> notificationToShop(String idShop) async {
+    String urlFindToken =
+        '${MyConstant().domain}/eatporkshop/api/getUserWhereId.php?isAdd=true&id=$idShop';
+    await Dio().get(urlFindToken).then((value) {
+      var result = json.decode(value.data);
+      for (var item in result) {
+        UserModel model = UserModel.fromJson(item);
+        String tokenShop = model.token;
+        String title = 'มี Order จากลูกค้า';
+        String body = 'มีการสั่งอาหาร จากลูกค้า ค่ะ';
+        String urlSendToken =
+            '${MyConstant().domain}/eatporkshop/api/apiNotification.php?isAdd=true&token=$tokenShop&title=$title&body=$body';
+
+        sendNotificationToShop(urlSendToken);
+      }
+    });
+  }
+
+  Future<Null> sendNotificationToShop(String urlSendToken) async {
+    await Dio().get(urlSendToken).then(
+          (value) => normalDialog(context, 'ส่ง Order ไปที่ร้านค้าแล้ว ค่ะ'),
+        );
   }
 }

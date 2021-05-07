@@ -6,6 +6,7 @@ import 'package:eatporkshop/utility/my_constant.dart';
 import 'package:eatporkshop/utility/my_style.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:steps_indicator/steps_indicator.dart';
 
 class ShowStatusFoodOrder extends StatefulWidget {
   @override
@@ -20,6 +21,8 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
   List<List<String>> listPrices = List();
   List<List<String>> listAmounts = List();
   List<List<String>> listSums = List();
+  List<int> totalInts = List();
+  List<int> statusInts = List();
 
   @override
   void initState() {
@@ -38,20 +41,67 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
         itemCount: orderModels.length,
         itemBuilder: (context, index) => Column(
           children: [
+            MyStyle().mySizebox(),
             buildNameShop(index),
             buildDateTimeOrder(index),
             buildDistance(index),
             buildTransport(index),
             buildHead(),
             buildListViewMenuFood(index),
+            bulidTotal(index),
+            MyStyle().mySizebox(),
+            bulidStepIndecator(statusInts[index]),
+            MyStyle().mySizebox(),
           ],
         ),
+      );
+
+  Widget bulidStepIndecator(int index) => Column(
+        children: [
+          StepsIndicator(
+            lineLength: 80,
+            selectedStep: index,
+            nbSteps: 4,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text('Order'),
+              Text('Cooking'),
+              Text('Delivery'),
+              Text('Finish'),
+            ],
+          ),
+        ],
+      );
+
+  Widget bulidTotal(int index) => Row(
+        children: [
+          Expanded(
+            flex: 5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                MyStyle().showTitleH3Red('รวมราคาอาหาร '),
+              ],
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MyStyle().showTitleH3Purple(totalInts[index].toString()),
+              ],
+            ),
+          ),
+        ],
       );
 
   ListView buildListViewMenuFood(int index) => ListView.builder(
         shrinkWrap: true,
         physics: ScrollPhysics(),
-        itemCount: listMunuFoods.length,
+        itemCount: listMunuFoods[index].length,
         itemBuilder: (context, index2) => Row(
           children: [
             Expanded(
@@ -172,6 +222,29 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
           List<String> prices = changeArray(model.price);
           List<String> amounts = changeArray(model.amount);
           List<String> sums = changeArray(model.sum);
+
+          int status = 0;
+          switch (model.status) {
+            case 'UserOrder':
+              status = 0;
+              break;
+            case 'ShopCooking':
+              status = 1;
+              break;
+            case 'RiderHandle':
+              status = 2;
+              break;
+            case 'Finish':
+              status = 3;
+              break;
+            default:
+          }
+
+          int total = 0;
+          for (var string in sums) {
+            total = total + int.parse(string.trim());
+          }
+
           setState(() {
             statusOrder = false;
             orderModels.add(model);
@@ -179,6 +252,8 @@ class _ShowStatusFoodOrderState extends State<ShowStatusFoodOrder> {
             listPrices.add(prices);
             listAmounts.add(amounts);
             listSums.add(sums);
+            totalInts.add(total);
+            statusInts.add(status);
           });
         }
       }

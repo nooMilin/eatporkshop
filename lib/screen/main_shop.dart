@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:eatporkshop/utility/my_style.dart';
+import 'package:eatporkshop/utility/normal_dialog.dart';
 import 'package:eatporkshop/utility/signout_process.dart';
 import 'package:eatporkshop/widget/infomation_shop.dart';
 import 'package:eatporkshop/widget/list_food_menu_shop.dart';
 import 'package:eatporkshop/widget/order_list_shop.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class MainShop extends StatefulWidget {
@@ -12,6 +16,27 @@ class MainShop extends StatefulWidget {
 
 class _MainShopState extends State<MainShop> {
   Widget currentWidget = OrderListShop();
+
+  @override
+  void initState() {
+    super.initState();
+    aboutNotification();
+  }
+
+  Future<Null> aboutNotification() async {
+    if (Platform.isAndroid) {
+      print('aboutNoti Work Android');
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print("notification: message");
+        normalDialog(context, 'มีคนสั่งอาหารเข้ามาค่ะ');
+      });
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print("notification: resume");
+      });
+    } else if (Platform.isIOS) {
+      print('aboutNoti Work IOS');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
