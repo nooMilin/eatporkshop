@@ -116,10 +116,10 @@ class _SignInState extends State<SignIn> {
         ),
       );
 
-  Future <Null> checkAuthen() async{
-    String url = '${MyConstant().domain}/eatporkshop/api/getUser.php?isAdd=true&User=$user';
+  Future<Null> checkAuthen() async {
+    String url =
+        '${MyConstant().domain}/eatporkshop/api/getUser.php?isAdd=true&User=$user';
     try {
-
       Response response = await Dio().get(url);
       print('res = $response');
 
@@ -128,32 +128,31 @@ class _SignInState extends State<SignIn> {
         UserModel userModel = UserModel.fromJson(map);
         if (password == userModel.password) {
           String chooseType = userModel.chooseType;
-          if(chooseType == 'User'){
+          if (chooseType == 'User') {
             routeTuService(MainUser(), userModel);
-          }else if(chooseType == 'Shop'){
+          } else if (chooseType == 'Shop') {
             routeTuService(MainShop(), userModel);
-          }else if(chooseType == 'Rider'){
+          } else if (chooseType == 'Rider') {
             routeTuService(MainRider(), userModel);
-          }else{
+          } else {
             normalDialog(context, 'Error');
           }
         } else {
           normalDialog(context, 'Password ไม่ถูกต้อง');
         }
       }
-      
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<Null> routeTuService(Widget myWidget, UserModel userModel) async {
-
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.setString('id', userModel.id);
-    preferences.setString('ChooseType', userModel.chooseType);
-    preferences.setString('Name', userModel.name);
+    preferences.setString(MyConstant().keyId, userModel.id);
+    preferences.setString(MyConstant().keyType, userModel.chooseType);
+    preferences.setString(MyConstant().keyName, userModel.name);
 
-    MaterialPageRoute route = MaterialPageRoute(builder: (context) => myWidget,);
+    MaterialPageRoute route = MaterialPageRoute(
+      builder: (context) => myWidget,
+    );
     Navigator.pushAndRemoveUntil(context, route, (route) => false);
   }
 }

@@ -27,11 +27,24 @@ class _MainShopState extends State<MainShop> {
     if (Platform.isAndroid) {
       print('aboutNoti Work Android');
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print("notification: message");
-        normalDialog(context, 'มีคนสั่งอาหารเข้ามาค่ะ');
+        RemoteNotification notification = message.notification;
+
+        print("notification: title ${notification.title}");
+        print("notification: body ${notification.body}");
+
+        String title = notification.title;
+        String notiMessage = notification.body;
+        normalDialog2(context, title, notiMessage);
       });
+
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print("notification: resume");
+        print("notification: onResume");
+
+        String title = message.data['title'];
+        String body = message.data['body'];
+
+        normalDialog2(context, title, body);
+
       });
     } else if (Platform.isIOS) {
       print('aboutNoti Work IOS');
